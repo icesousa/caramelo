@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   late Future<String> _estadoconsulta;
   var ready = false;
   List<String> listFavoritas = [];
+
   Future<String> consultarApi() async {
     var response =
         await http.get(Uri.parse('https://dog.ceo/api/breeds/image/random'));
@@ -46,10 +47,23 @@ class _HomePageState extends State<HomePage> {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: Duration(milliseconds: 500),
-        backgroundColor: remover? Colors.red : Colors.brown,
+        backgroundColor: remover ? Colors.red : Colors.brown,
         content: remover
-            ? Text('Removido dos favoritos')
-            : Text('Adicionado aos favoritos'),
+            ? Row(
+                children: [
+                  Text(' Doguinho removido dos favoritos  '),
+                  Icon(Icons.sentiment_very_dissatisfied),
+                ],
+              )
+            : Row(
+                children: [
+                  Text('Doguinho adicionado aos favoritos  '),
+                  Icon(
+                    Icons.sentiment_very_satisfied,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -96,7 +110,12 @@ class _HomePageState extends State<HomePage> {
               _estadoconsulta = consultarApi();
             });
           },
-          label: Text('Pesquisar')),
+          label: Row(
+            children: [
+              Text('Pesquisar  '),
+              Icon(Icons.pets),
+            ],
+          )),
       body: Center(
           child: FutureBuilder<String>(
               future: _estadoconsulta,
@@ -131,33 +150,107 @@ class FavoritosPage extends StatefulWidget {
   State<FavoritosPage> createState() => _FavoritosPageState();
 }
 
+List<String> selecionadas = [];
+bool isPressed = false;
+
 class _FavoritosPageState extends State<FavoritosPage> {
+  addFavorito(int index) {
+    if (!selecionadas.contains(widget.favoritas[index])) {
+      setState(() {
+        selecionadas.add(widget.favoritas[index]);
+        selecionadas.toList();
+      });
+    } else if (selecionadas.contains(widget.favoritas[index])) {
+      setState(() {
+        selecionadas.remove(widget.favoritas[index]);
+        selecionadas.toList();
+      });
+    }
+    ;
+    selecionadas.toList();
+  }
+
+  removerFavorito(int index) {
+    if (selecionadas.contains(widget.favoritas[index])) {
+      setState(() {
+        selecionadas.remove(widget.favoritas[index]);
+      });
+    }
+  }
+
+  removerDog() {
+    setState(() {});
+  }
+
+  bool isDeleting = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Favoritos'),
+        title: Row(
+          children: [
+            Text('Favoritos  '),
+            Icon(Icons.pets),
+          ],
+        ),
+        actions: [
+          selecionadas.isNotEmpty
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.favoritas
+                          .removeWhere((item) => selecionadas.contains(item));
+                      selecionadas.clear();
+                    });
+
+                    /* //// OUTRA FORMA DE FAZER 
+                  setState(() {
+                    for(int i in selecionadas.asMap().keys.toList()){
+                      widget.favoritas.remove(selecionadas[i]);
+                    }
+                          selecionadas.clear();
+
+                  }); 
+
+                  */
+                  },
+                  icon: Icon(Icons.delete))
+              : SizedBox(),
+        ],
       ),
       body: Column(
         children: [
           Flexible(
             child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 150),
-                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2),
                 scrollDirection: Axis.vertical,
                 itemCount: widget.favoritas.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: GestureDetector(
-                      onDoubleTap: () {
-                        
+                      onTap: () => selecionadas.isNotEmpty
+                          ? addFavorito(index)
+                          : selecionadas.toList(),
+                      onLongPress: () {
+                        addFavorito(index);
                       },
                       child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  width: selecionadas
+                                          .contains(widget.favoritas[index])
+                                      ? 5
+                                      : 1,
+                                  color: selecionadas
+                                          .contains(widget.favoritas[index])
+                                      ? Colors.red
+                                      : Colors.transparent)),
                           width: 125,
                           height: 125,
-                          child: Image.network(widget.favoritas[index])),
+                          child: Image.network(widget.favoritas[index], fit: BoxFit.cover,), ),
                     ),
                   );
                 }),
