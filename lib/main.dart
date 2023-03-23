@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(CarameloApp());
+  runApp(const CarameloApp());
 }
 
 class CarameloApp extends StatelessWidget {
@@ -14,7 +14,7 @@ class CarameloApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: const HomePage(),
       theme: ThemeData(
         primarySwatch: Colors.brown,
       ),
@@ -46,17 +46,17 @@ class _HomePageState extends State<HomePage> {
   snackBarDialog(bool remover) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         backgroundColor: remover ? Colors.red : Colors.brown,
         content: remover
             ? Row(
-                children: [
+                children: const [
                   Text(' Doguinho removido dos favoritos  '),
                   Icon(Icons.sentiment_very_dissatisfied),
                 ],
               )
             : Row(
-                children: [
+                children: const [
                   Text('Doguinho adicionado aos favoritos  '),
                   Icon(
                     Icons.sentiment_very_satisfied,
@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carameloszinhos'),
+        title: const Text('Carameloszinhos'),
         actions: [
           IconButton(
               onPressed: () {
@@ -101,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                               favoritas: listFavoritas,
                             )));
               },
-              icon: Icon(Icons.favorite)),
+              icon: const Icon(Icons.favorite)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
             });
           },
           label: Row(
-            children: [
+            children: const [
               Text('Pesquisar  '),
               Icon(Icons.pets),
             ],
@@ -121,22 +121,21 @@ class _HomePageState extends State<HomePage> {
               future: _estadoconsulta,
               builder: ((context, snapshot) {
                 if (snapshot.hasError) {
-                  return Text('Erro ao Consultar API');
+                  return const Text('Erro ao Consultar API');
                 }
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }
                 if (snapshot.connectionState == ConnectionState.done) {
                   return GestureDetector(
                       onDoubleTap: () {
                         setState(() {
                           addFavorite(snapshot.data!);
-                          print(listFavoritas);
                         });
                       },
                       child: Image.network(snapshot.data!));
                 }
-                return Placeholder();
+                return const Placeholder();
               }))),
     );
   }
@@ -166,7 +165,7 @@ class _FavoritosPageState extends State<FavoritosPage> {
         selecionadas.toList();
       });
     }
-    ;
+    
     selecionadas.toList();
   }
 
@@ -189,7 +188,7 @@ class _FavoritosPageState extends State<FavoritosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          children: [
+          children: const [
             Text('Favoritos  '),
             Icon(Icons.pets),
           ],
@@ -215,15 +214,15 @@ class _FavoritosPageState extends State<FavoritosPage> {
 
                   */
                   },
-                  icon: Icon(Icons.delete))
-              : SizedBox(),
+                  icon: const Icon(Icons.delete))
+              : const SizedBox(),
         ],
       ),
       body: Column(
         children: [
           Flexible(
             child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),
                 scrollDirection: Axis.vertical,
                 itemCount: widget.favoritas.length,
@@ -245,8 +244,7 @@ class _FavoritosPageState extends State<FavoritosPage> {
                                       ? 5
                                       : 1,
                                   color: selecionadas
-                                          .contains(widget.favoritas[index])
-                                      ? Colors.red
+                                          .contains(widget.favoritas[index])? Colors.red
                                       : Colors.transparent)),
                           width: 125,
                           height: 125,
